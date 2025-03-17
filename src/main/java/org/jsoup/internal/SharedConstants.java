@@ -19,6 +19,7 @@ public final class SharedConstants {
     public static final String DummyUri = "https://dummy.example/"; // used as a base URI if none provided, to allow abs url resolution to preserve relative links
 
     public static final String UseHttpClient = "jsoup.useHttpClient";
+    public static final String UseVirtualThreads = "jsoup.useVirtualThreads";
 
     private SharedConstants() {}
 }

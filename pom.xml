@@ -83,6 +83,8 @@
               <ignores>
                 <ignore>java.net.HttpURLConnection</ignore><!-- .setAuthenticator(java.net.Authenticator) in Java 9; only used in multirelease 9+ version -->
                 <ignore>java.net.http.*</ignore><!-- HttpClient in Java 11; only used in multirelease 11+ version -->
+                <ignore>java.lang.Thread</ignore><!-- Virtual thread methods in Java 21; only used in multirelease 21+ version -->
+                <ignore>java.util.concurrent.Executors</ignore><!-- Virtual thread executors in Java 21; only used in multirelease 21+ version -->
               </ignores>
             </configuration>
           </execution>
@@ -120,10 +122,12 @@
                 <ignore>java.util.Spliterators</ignore>
                 <ignore>java.nio.ByteBuffer</ignore> <!-- .flip(); added in API1; possibly due to .flip previously returning Buffer, later ByteBuffer; return unused -->
                 <ignore>java.net.HttpURLConnection</ignore><!-- .setAuthenticator(java.net.Authenticator) in Java 9; only used in multirelease 9+ version -->
-                <!-- HttpClient and following in Java 11; only used in multirelease 11+ version, guarded and not on Android -->
+                <!-- HttpClient and following in Java 11/21; only used in multirelease versions, guarded and not on Android -->
                 <ignore>java.net.http.*</ignore>
                 <ignore>java.time.Duration</ignore>
                 <ignore>java.util.OptionalLong</ignore>
+                <ignore>java.lang.Thread</ignore><!-- Virtual thread methods in Java 21; only used in multirelease 21+ version -->
+                <ignore>java.util.concurrent.Executors</ignore><!-- Virtual thread executors in Java 21; only used in multirelease 21+ version -->
               </ignores>
               <!-- ^ Provided by https://developer.android.com/studio/write/java8-support#library-desugaring -->
             </configuration>
@@ -416,6 +420,21 @@
                   <multiReleaseOutput>true</multiReleaseOutput>
                 </configuration>
               </execution>
+              
+              <execution>
+                <id>compile-java-21</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>compile</goal>
+                </goals>
+                <configuration>
+                  <release>21</release>
+                  <compileSourceRoots>
+                    <compileSourceRoot>${project.basedir}/src/main/java21</compileSourceRoot>
+                  </compileSourceRoots>
+                  <multiReleaseOutput>true</multiReleaseOutput>
+                </configuration>
+              </execution>
 
               <!-- Tests for multi-release jar on 11: mark tests to be compiled; then and add to class path -->
               <execution>
@@ -432,17 +451,34 @@
                   </compileSourceRoots>
                 </configuration>
               </execution>
+              
+              <!-- Tests for multi-release jar on 21: mark tests to be compiled; then and add to class path -->
+              <execution>
+                <id>testcompile-java-21</id>
+                <phase>test-compile</phase>
+                <goals>
+                  <goal>testCompile</goal>
+                </goals>
+                <configuration>
+                  <release>21</release>
+
+                  <compileSourceRoots>
+                    <compileSourceRoot>${project.basedir}/src/test/java21</compileSourceRoot>
+                  </compileSourceRoots>
+                </configuration>
+              </execution>
 
             </executions>
           </plugin>
 
-          <!-- Add the Java 11-specific test directory to the test runtime classpath -->
+          <!-- Add the Java 11 and Java 21-specific test directories to the test runtime classpath -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <additionalClasspathElements>
                 <additionalClasspathElement>${project.build.outputDirectory}/META-INF/versions/11</additionalClasspathElement>
+                <additionalClasspathElement>${project.build.outputDirectory}/META-INF/versions/21</additionalClasspathElement>
               </additionalClasspathElements>
               <useModulePath>false</useModulePath>  <!-- tests use classpath -->
             </configuration>
