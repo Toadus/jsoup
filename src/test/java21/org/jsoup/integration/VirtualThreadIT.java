@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the Java 21 virtual thread functionality in real-world integration scenarios.
+ * Note: These tests only verify that virtual threads work in the JVM.
+ * For testing jsoup's virtual thread HTTP implementation, see VirtualThreadConnectIT.
  */
 public class VirtualThreadIT {
     
